@@ -1,0 +1,103 @@
+------Comentarios
+(--) Comentarios de una sola linea doble guion
+/*  Comentarios en bloques entre lineas */   
+
+
+---Borrar la tabla si ya existe
+if object_id ('libros') is not null
+	drop table libros;
+
+
+-- Crear Tabla
+create table libros (
+	codigo int identity (1,1) primary key,
+	nombre_libro varchar (100),
+	autor varchar (100),
+	editorial varchar (100),
+	edicion float (5),
+	precio decimal(5,2),
+	cantidad float(5),
+	fecha datetime
+)
+
+
+--- Cuando tenemos un lote de comandos SQL y necesitamos particionarlo en distintos sublotes debemos utilizar
+--- el comando "go", no es un comando SQL sino un comando propio de SQL Server Management Studio.
+go
+
+
+--- Llamamos al procedimeinto almacanenado sp_columns para conocer los campos de la tabla
+exec sp_columns libros;
+
+
+--- Borrar registros de una tabla por completo
+truncate table libros
+
+
+---Eliminar una tabla
+drop table libros
+
+
+-- Insertar registros en una tabla
+set dateformat dmy;
+insert into libros
+	values ('Matematicas 1', 'Fernando R.', 'Forze', 2022, 120.34000, 10,'12-1-2024');
+insert into libros
+	values ('Español 1', 'Jose Luis R.', 'Forze', 2021, 320.00000, 5, '12-1-2022');
+insert into libros
+	values ('Ciencias', 'Jose Luiz M.', 'Macgrill', 2022, 220.54000, 1, '12-10-2022');
+
+
+--- Operadores Relacionales
+/*> mayor que
+>= mayor o igual
+< menor que
+<= menor o igual
+<> distinto
+= igual */
+
+
+-- Recuperar registros de una tabla
+select * from libros
+select top 3 * from libros where cantidad >=10
+select titulo, autor, editorial from libros
+select * from libros where autor like '%Fernando%'
+select nombre_libro As 'Nombre del Libro', precio As 'Precio de Libros' from libros where precio >= 100 order by precio Asc
+select * from libros where editorial in ('forze', 'macgrill')
+select * from libros where precio between 100 and 200
+
+
+--Cuenta la cantidad
+select COUNT (nombre_libro) as 'Total de libros' from  libros where precio >300
+select nombre_libro as Nombre, count(*) as Cantidad from  libros  group by nombre_libro order by nombre_libro ASC
+select nombre_libro as Nombre, count(*) as Cantidad from  libros  group by nombre_libro having count (*)>= 2 order by nombre_libro ASC
+
+
+--Obtener total de libros
+select SUM (cantidad) from libros
+select nombre_libro as Nombre, sum (cantidad) as Cantidad from libros group by nombre_libro order by nombre_libro ASC
+select editorial as Editorial, sum (cantidad) as Cantidad from libros group by editorial order by editorial ASC
+
+select MAX (precio) as 'Libro mas caro' from  libros
+select Min (precio) as 'Libro mas barato' from  libros
+select Avg (precio) as 'Libro promedio' from  libros
+
+
+-- Borrar registros
+delete from libros where codigo = 10
+delete from libros where codigo in (10, 11,12)
+
+
+-- Actualizar registros
+update libros set nombre_libro = 'Matematicas 3', precio = 370.56 where codigo = 7
+update libros set nombre_libro = 'Español 3', precio = 250.56 where codigo = 8
+update libros set nombre_libro = 'Ciencia 1', precio = 220.56 where codigo = 3
+update libros
+	set cantidad = case codigo
+	    when '3' then 7
+	    when '4' then 7
+	    when '7' then 7
+	end
+	where codigo IN('3','4','7')
+
+
